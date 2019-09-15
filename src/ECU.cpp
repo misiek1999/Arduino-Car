@@ -1,7 +1,7 @@
 #include "ECU.h"
 
-    gearBox Gbox;
-    Drive motor;
+    
+    
  
 Ecu::Ecu(){
     gearboxIsBlocked = false;

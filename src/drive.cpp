@@ -1,4 +1,6 @@
 #include "drive.h"
+Drive motor;
+
 Drive::Drive(){
     pinMode(motorFirstRotationRight, OUTPUT);
     pinMode(motorFirstRotationLeft, OUTPUT);

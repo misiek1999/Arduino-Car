@@ -1,5 +1,6 @@
 #include "gearBox.h"
 
+gearBox Gbox;
 
 gearBox::gearBox(){
 selectedGear = 0;

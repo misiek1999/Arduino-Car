@@ -5,9 +5,9 @@
 #include "drive.h"
 #ifndef ECU
 #define ECU
-    extern gearBox Gbox;
+    
 
-    extern Drive motor;
+    
 
     struct Ecu
     {

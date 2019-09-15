@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "C:\\Users\\Ja\\Documents\\PlatformIO\\Projects\\UNO"
+		},
+		{
+			"name": "NANO MPU",
+			"path": "C:\\Users\\Ja\\Documents\\PlatformIO\\Projects\\NANO MPU"
+		},
+		{
+			"name": "szybko",
+			"path": "C:\\Users\\Ja\\Documents\\PlatformIO\\Projects\\szybko"
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.windows": {
+			"PATH": "C:\\Users\\Ja\\.platformio\\penv\\Scripts;C:\\Users\\Ja\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;D:\\Program Files\\Git\\cmd;D:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;D:\\MinGW\\minGW\\bin;C:\\Program Files\\dotnet\\;C:\\Program Files (x86)\\STMicroelectronics\\STM32 ST-LINK Utility\\ST-LINK Utility;E:\\Biblioteki\\Anaconda;E:\\Biblioteki\\Anaconda\\Library\\mingw-w64\\bin;E:\\Biblioteki\\Anaconda\\Library\\usr\\bin;E:\\Biblioteki\\Anaconda\\Library\\bin;E:\\Biblioteki\\Anaconda\\Scripts;C:\\Users\\Ja\\AppData\\Local\\Programs\\Python\\Python37\\Scripts\\;C:\\Users\\Ja\\AppData\\Local\\Programs\\Python\\Python37\\;C:\\Users\\Ja\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\Ja\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;D:\\Program Files\\Git\\cmd;D:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;D:\\MinGW\\minGW\\bin;C:\\Program Files\\dotnet\\;C:\\Program Files (x86)\\STMicroelectronics\\STM32 ST-LINK Utility\\ST-LINK Utility;E:\\Biblioteki\\Anaconda;E:\\Biblioteki\\Anaconda\\Library\\mingw-w64\\bin;E:\\Biblioteki\\Anaconda\\Library\\usr\\bin;E:\\Biblioteki\\Anaconda\\Library\\bin;E:\\Biblioteki\\Anaconda\\Scripts;C:\\Users\\Ja\\AppData\\Local\\Programs\\Python\\Python37\\Scripts\\;C:\\Users\\Ja\\AppData\\Local\\Programs\\Python\\Python37\\;C:\\Users\\Ja\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\Ja\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;",
+			"PLATFORMIO_CALLER": "vscode"
+		}
+	}
+}

@@ -31,7 +31,8 @@ Servo sterring;
 #include "Speedmeter.h"
 //Radio communication
 #include "radio.h"
-
+#include "radioCommand.h"
+Radio radio;
 #include "ECU.h"
 Ecu ecu;
 // uncomment "OUTPUT_READABLE_ACCELGYRO" if you want to see a tab-separated
@@ -47,12 +48,17 @@ Ecu ecu;
 
 //eint8_t threshold, count; 
     int counter = 0;
-    void increaseRotation(){
-            counter++;
-    }
-    char tickWithoutRotation =0;
-    #define MAX_TiCK_WITHOUT_ROTATION 20
-    
+void increaseRotation(){
+        counter++;
+}
+char tickWithoutRotation =0;
+#define MAX_TiCK_WITHOUT_ROTATION 20
+//Dabble
+#define CUSTOM_SETTINGS
+#define INCLUDE_GAMEPAD_MODULE
+#include <Dabble.h>
+
+
 void setup() {
     // join I2C bus (I2Cdev library doesn't do this automatically)
     Wire.begin();
@@ -60,7 +66,7 @@ void setup() {
     // initialize serial communication
     // (38400 chosen because it works as well at 8MHz as it does at 16MHz, but
     // it's really up to you depending on your project)
-    Serial.begin(38400);
+    Serial.begin(115200);
 
     // initialize device
     Serial.println("Initializing I2C");
@@ -93,7 +99,7 @@ void setup() {
 
 
     attachInterrupt(digitalPinToInterrupt(interruptPin), increaseRotation, CHANGE );
-
+    Dabble.begin(115200, RX_BLE, TX_BLE);
 }
 ///////////////////////////////////////// L    O    O    P   ////////////////////////////////////////
 void loop() {
@@ -134,5 +140,40 @@ void loop() {
         tickWithoutRotation = 0;
     
 */
+    Dabble.processInput();
+  int angle = GamePad.getAngle();
+  int radius = GamePad.getRadius();
+  float xAxis = GamePad.getx_axis();
+  float yAxis = GamePad.gety_axis();
+
+  if (GamePad.isSquarePressed())
+  {
+    Serial.print("Square");
+  }
+
+  if (GamePad.isCirclePressed())
+  {
+    Serial.print("Circle");
+  }
+
+  if (GamePad.isCrossPressed())
+  {
+    Serial.print("Cross");
+  }
+
+  if (GamePad.isTrianglePressed())
+  {
+    Serial.print("Triangle");
+  }
+
+  if (GamePad.isStartPressed())
+  {
+    Serial.print("Start");
+  }
+
+  if (GamePad.isSelectPressed())
+  {
+    Serial.print("Select");
+  }
     delay(30);
 }

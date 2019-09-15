@@ -11,6 +11,6 @@ struct Drive{
     bool status;    //TRUE - motor NOT work
 };
 
-
+extern Drive motor;
 
 #endif

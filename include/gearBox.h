@@ -16,7 +16,7 @@ struct gearBox{
     void changeGear(byte selected);
 
 };
-
+extern gearBox Gbox;
 
 
 #endif

@@ -5,7 +5,7 @@
 #ifndef RF
 #define RF
 #define MESSAGE_LENGHT 2
-    class Radio
+    struct Radio
     {   
         RF24 radio;
         int msg[MESSAGE_LENGHT];

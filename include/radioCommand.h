@@ -9,5 +9,5 @@
     #define MOTOR_SPEED_SECOND 7
     #define GET_ROTATION 8
     #define GET_DISTANCE_TO_OBJECT 9
-    
+    #define READ_GPS_POSITION 10
 #endif
