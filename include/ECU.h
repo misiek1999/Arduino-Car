@@ -15,7 +15,7 @@
         bool automaticGearboxIsSelected;
         int lastDistanceToBarrier;
         bool gearboxIsBlocked;
-        void go();
+        void run();
     };
     
 extern Ecu main_ecu;

@@ -38,15 +38,14 @@ Sonic sonic_radar1;
 //Hbridge main motor
 #include "drive.h"
 //check rotation speed of main motor
-#include "Speedmeter.h"
+//#include "Speedmeter.h"
 // Include ecu -
 #include "ECU.h"
 Ecu ecu;
-// File with function to ble communication
-#include "bleConnection.h"
-// File with class and function to radio communication via nrf24
-#include "radio.h"
-//eint8_t threshold, count;
+#include "connection.h"
+Connector connection;
+#include <TinyGPS++.h>
+TinyGPSPlus gps;
 int counter = 0;
 void increaseRotation()
 {
@@ -72,8 +71,8 @@ void setup()
 {
     // Debug serial initialization
     Serial.begin(115200);
-    // Ble serial initialization
-    Serial1.begin(9600);
+    if(!connection.setup())
+        return;
     // Mpu initialization
     Serial.println(F("Start init mpu"));
     Wire.begin();
@@ -81,8 +80,8 @@ void setup()
     mpu.initialize();
     pinMode(INTERRUPT_PIN, INPUT);
     // verify connection
-    Serial.println(F("Testing device connections..."));
-    Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
+    Serial.println(F("Testing connections"));
+    Serial.println(mpu.testConnection() ? F("MPU6050 S") : F("MPU6050 F"));
 
     // load and configure the DMP
     Serial.println(F("Initializing DMP..."));
@@ -97,22 +96,15 @@ void setup()
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
         // Calibration Time: generate offsets and calibrate our MPU6050
-        mpu.CalibrateAccel(6);
-        mpu.CalibrateGyro(6);
         mpu.PrintActiveOffsets();
         // turn on the DMP, now that it's ready
         Serial.println(F("Enabling DMP..."));
         mpu.setDMPEnabled(true);
 
         // enable Arduino interrupt detection
-        Serial.print(F("Enabling interrupt detection (Arduino external interrupt "));
-        Serial.print(digitalPinToInterrupt(INTERRUPT_PIN));
-        Serial.println(F(")..."));
+    Serial.print(digitalPinToInterrupt(INTERRUPT_PIN));
         attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
-
-        // set our DMP Ready flag so the main loop() function knows it's okay to use it
-        Serial.println(F("DMP ready! Waiting for first interrupt..."));
         dmpReady = true;
 
         // get expected DMP packet size for later comparison
@@ -122,9 +114,8 @@ void setup()
         // 1 = initial memory load failed
         // 2 = DMP configuration updates failed
         // (if it's going to break, usually the code will be 1)
-        Serial.print(F("DMP Initialization failed (code "));
+        Serial.print(F("DMP-fail"));
         Serial.print(devStatus);
-        Serial.println(F(")"));
     }
 
     // Sonic sensor initialization
@@ -149,7 +140,7 @@ void loop()
         // .
         // .
         // if you are really paranoid you can frequently test in between other
-        // stuff to see if mpuInterrupt is true, and if so, "break;" from the
+        // stuff to see bif mpuInterrupt is true, and if so, "break;" from the
         // while() loop to immediately process the MPU data
         // .
         // .
@@ -171,7 +162,7 @@ void loop()
         // reset so we can continue cleanly
         mpu.resetFIFO();
       //  fifoCount = mpu.getFIFOCount();  // will be zero after reset no need to ask
-        Serial.println(F("FIFO overflow!"));
+        Serial.println(F("FIFO!"));
 
     // otherwise, check for DMP data ready interrupt (this should happen frequently)
     } else if (mpuIntStatus & _BV(MPU6050_INTERRUPT_DMP_INT_BIT)) {
@@ -197,12 +188,12 @@ void loop()
     }
 
     // Receive data and do action
-    receiveDataAndDoAction();
+    //receiveDataAndDoAction();
+    connection.run();
     // Tactital delay 
     delay(10);
     // Read sonic sensor distance and potential lock motor 
-    int disctance = sonic_radar1.getDistanceInCM();
-    Serial.println(disctance);
-    //if ( disctance < 5 && disctance >= 2)
+    ecu.lastDistanceToBarrier = sonic_radar1.getDistanceInCM();
+    ecu.run();
          
 }

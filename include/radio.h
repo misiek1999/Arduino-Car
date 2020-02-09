@@ -6,6 +6,6 @@
     #include <SPI.h>
     //#include <printf.h>
     void setupRadio(RF24&  radio);
-    bool sendData(RF24 radio, char* str);
+    bool sendData(RF24 &radio, char* str);
     String receiveData(RF24 *radio);
 #endif

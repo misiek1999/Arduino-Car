@@ -9,7 +9,7 @@ Ecu::Ecu(){
     lastDistanceToBarrier = 0;
 }
 
-void Ecu::go(){
+void Ecu::run(){
     if(automaticGearboxIsSelected &&  gearboxIsBlocked){
        Gbox.stepDown();
     }
