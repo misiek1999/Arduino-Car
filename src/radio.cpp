@@ -1,4 +1,6 @@
 #include "radio.h"
+
+//#include <printf.h>
 void setupRadio(RF24 &radio_)
 {
     // 0 =  transmitter, 1 = robot
@@ -15,6 +17,7 @@ void setupRadio(RF24 &radio_)
     // getting_started sketch, and the likelihood of close proximity of the devices. RF24_PA_MAX is default.
     //radio.setPALevel(RF24_PA_LOW);
     radio_.setPALevel(RF24_PA_MAX);
+    //radio_.enableAckPayload();
     // Open a writing and reading pipe on each radio, with opposite addresses
     if (radioNumber)
     {
@@ -26,7 +29,7 @@ void setupRadio(RF24 &radio_)
         radio_.openWritingPipe(addresses[0]);
         radio_.openReadingPipe(1, addresses[1]);
     }
-    radio_.printDetails();
+    //radio_.printDetails();
     //
     // Start the radio listening for data
     radio_.startListening();
@@ -39,7 +42,7 @@ bool sendData(RF24 &radio_, char str[])
     radio_.stopListening(); // First, stop listening so we can talk.
     Serial.println(str);
     Serial.println(strlen(str));
-    if (!radio_.write(&str, strlen(str)))
+    if (!radio_.write(str, strlen(str)))
     {
         Serial.println(F("err!"));
         return false;
@@ -58,12 +61,12 @@ String receiveData(RF24 *radio_)
         Serial.println("NC");
         return String('\0');
     }
-    Serial.println(sizeof(buff));
+    //Serial.println(sizeof(buff));
     if ((*radio_).available())
     {
         // Variable for the received timestamp
         while ((*radio_).available())
-        {                            // While there is data ready
+        {                             // While there is data ready
             (*radio_).read(buff, 32); // Get the payload
             Serial.println(buff);
             return String(buff);
@@ -72,7 +75,44 @@ String receiveData(RF24 *radio_)
     else
     {
         Serial.println("Radio not avalible");
-        return  String('\0');
+        return String('\0');
     }
-    return  String('\0');
+    return String('\0');
+}
+
+void sendDataStructure(RF24 &radio, sterringData &structure_to_send)
+{
+    radio.stopListening(); // First, stop listening so we can talk.
+    Serial.println("Data is sended");
+    //Serial.println(strlen(str));
+    if (!radio.write(&structure_to_send, sizeof(structure_to_send)))
+    {
+        Serial.println(F("err!"));
+    }
+    else
+        Serial.println("Sucf");
+    radio.startListening();
+}
+
+void receiveDataStructure(RF24 &radio, sterringData &structure_to_modify)
+{
+    if (!radio.isChipConnected())
+    {
+        Serial.println("NConn");
+    }
+    else if (radio.available())
+    {
+        {                                                                  // While there is data ready
+            radio.read(&structure_to_modify, sizeof(structure_to_modify)); // Get the payload
+            Serial.println("Data received!");
+            Serial.println(structure_to_modify.pad_main_servo);
+            Serial.println(structure_to_modify.pad_power);
+            radio.printDetails();
+        }
+    }
+    else
+    {
+        Serial.println("Radio not avalible");
+    }
+    return;
 }

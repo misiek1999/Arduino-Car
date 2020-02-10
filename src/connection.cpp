@@ -7,6 +7,9 @@ Connector::Connector() : radio(CEpin, CSpin)
 
 bool Connector::setup()
 {
+    received_sterring_data.pad_main_servo =90;
+    received_sterring_data.pad_power = 0;
+    received_sterring_data.selected_gear = gear_mode::g1;
     // Ble serial initialization
     Serial1.begin(9600);
     //Setup nrf24 module
@@ -16,6 +19,9 @@ bool Connector::setup()
         type_of_connection = connection_types::RF24;
         return true;
     }
+    type_of_connection = connection_types::RF24;
+        return true;
+        
     //TODO: solve this problem
     if (Serial1) // Its always true i know -_-
     {
@@ -34,6 +40,7 @@ bool Connector::run()
     buff[0] = '\0';
     if (type_of_connection == connection_types::BLE)
     {
+        //Serial.println("BLE");
         if (Serial1.available())
         {
             ind_buff = Serial1.readBytesUntil('*', buff, sizeof(buff));
@@ -42,30 +49,36 @@ bool Connector::run()
         }
         else
         {
-            buff[0] = '\0';
+            return false;
         }
+        if (buff[0] == '\0')
+            return true;
+        else
+            read_data_and_do_action_BLE();
+        return true;
+
     }
     else if (type_of_connection == connection_types::RF24)
     {
-        String data = receiveData(&radio);
-        strcpy(buff, data.c_str());
+        if(radio.available())
+        {
+            receiveDataStructure(radio, received_sterring_data);
+            save_last_connection_time();
+            //Serial.println("data received");
+            read_data_and_do_action_RF24();
+        }
     }
-    else
-        return false;
+
     // No receive any data from master
-    if (buff[0] == '\0')
-        return true;
-    else
-        read_data_and_do_action();
-    return true;
+    return false;
 }
 
 const connection_types Connector::get_connection_type() const
 {
     return type_of_connection;
 }
-#define MAX_INT_LEN 8
-void Connector::read_data_and_do_action()
+#define MAX_BUFF_ITR 10
+void Connector::read_data_and_do_action_BLE()
 {
     switch (buff[0])
     {
@@ -86,6 +99,8 @@ void Connector::read_data_and_do_action()
                     pad_x += uint8_t(buff[buff_itr]) - 48;
                 }
                 buff_itr += 1;
+                if (buff_itr > MAX_BUFF_ITR)
+                    continue;
             }
             if (negative_number)
                 pad_x *= -1;
@@ -102,19 +117,22 @@ void Connector::read_data_and_do_action()
                     pad_y += uint8_t(buff[buff_itr]) - 48;
                 }
                 buff_itr += 1;
+                if (buff_itr > MAX_BUFF_ITR)
+                    continue;
             }
             if (negative_number)
                 pad_y *= -1;
-        
+            if (buff_itr > MAX_BUFF_ITR)
+                return;
 
-        Serial.println(pad_x);
-        Serial.println(pad_y);
-        // Change speed of main motor
-        motor.changeMotorSpeed(pad_y);
-    }
-    break;
-// Secornd PAD
-case 'R':
+            Serial.println(pad_x);
+            Serial.println(pad_y);
+            // Change speed of main motor
+            motor.changeMotorSpeed(pad_y);
+        }
+        break;
+    // Secornd PAD
+    case 'R':
         if (buff[1] == 'X')
         {
             uint8_t buff_itr = 2;
@@ -130,6 +148,8 @@ case 'R':
                     pad_x += uint8_t(buff[buff_itr]) - 48;
                 }
                 buff_itr += 1;
+                if (buff_itr > MAX_BUFF_ITR)
+                    continue;
             }
             if (negative_number)
                 pad_x *= -1;
@@ -146,47 +166,83 @@ case 'R':
                     pad_y += uint8_t(buff[buff_itr]) - 48;
                 }
                 buff_itr += 1;
+                if (buff_itr > MAX_BUFF_ITR)
+                    continue;
             }
             if (negative_number)
                 pad_y *= -1;
+            if (buff_itr > MAX_BUFF_ITR)
+                return;
+            Serial.println(pad_x);
+            Serial.println(pad_y);
+            // Change speed of main motor
+            main_servo.write(pad_x);
+        }
 
-        Serial.println(pad_x);
-        Serial.println(pad_y);
-        // Change speed of main motor
-         main_servo.write(pad_x);
+        break;
+    case 'A':
+        //Zmienia system na automatyczna zmianie biegów
+        Serial.println("A-G");
+
+        break;
+    case 'B':
+        //Manualne biegi, wybiera aktualny bieg
+
+        break;
+    case '1':
+        //1
+        Gbox.changeGear(1);
+        break;
+    case '2':
+        //2
+        Gbox.changeGear(2);
+        break;
+    case '3':
+        //3
+        Gbox.changeGear(3);
+        break;
+    case '4':
+        //4
+        Gbox.changeGear(4);
+        break;
+    case 'C':
+        //Connected information
+        break;
+    default:
+        Serial.println("E - Data not definied");
+        break;
     }
-
-    break;
-case 'A':
-    //Zmienia system na automatyczna zmianie biegów
-    Serial.println("A-G");
-
-    break;
-case 'B':
-    //Manualne biegi, wybiera aktualny bieg
-
-    break;
-case '1':
-    //1
-    Gbox.changeGear(1);
-    break;
-case '2':
-    //2
-    Gbox.changeGear(2);
-    break;
-case '3':
-    //3
-    Gbox.changeGear(3);
-    break;
-case '4':
-    //4
-    Gbox.changeGear(4);
-    break;
-case 'C':
-    //Connected information
-    break;
-default:
-    Serial.println("E - Data not definied");
-    break;
 }
+
+
+void Connector::read_data_and_do_action_RF24()
+{
+    motor.changeMotorSpeed(received_sterring_data.pad_power);
+    main_servo.write(received_sterring_data.pad_main_servo);
+    if(received_sterring_data.selected_gear != gear_mode::automatic)
+        Gbox.changeGear(uint8(received_sterring_data.selected_gear));
+    else
+    {
+
+    }
+    
+
+}
+
+bool Connector::is_chip_connected(){
+    return radio.isChipConnected();
+}
+
+void Connector::reset(){
+    if(type_of_connection == connection_types::RF24)
+        setupRadio(radio);
+}
+
+void Connector::save_last_connection_time(){
+    last_time = millis();
+}
+
+
+unsigned long Connector::last_received_data_time(){
+    return last_time;
 }

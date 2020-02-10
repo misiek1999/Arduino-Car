@@ -19,12 +19,19 @@
         RF24 radio;
         // Buffer for received data
         char buff[32];
-        void read_data_and_do_action();
+        sterringData received_sterring_data;
+        void read_data_and_do_action_BLE();
+        void read_data_and_do_action_RF24();
+        unsigned long last_time;
+        void save_last_connection_time();
     public:
         Connector();
         bool setup();
         bool run();
         const connection_types get_connection_type()const;
+        bool is_chip_connected();
+        void reset();
+        unsigned long last_received_data_time();
     };
 
 

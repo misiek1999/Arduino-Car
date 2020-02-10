@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <printf.h>
 #include "pinout.h"
 //Include mpu6050 settings and variables
 #include "Wire.h"
@@ -44,6 +45,7 @@ Sonic sonic_radar1;
 Ecu ecu;
 #include "connection.h"
 Connector connection;
+unsigned long reset_time;
 #include <TinyGPS++.h>
 TinyGPSPlus gps;
 int counter = 0;
@@ -123,6 +125,9 @@ void setup()
     // Main servo initialization
     main_servo.attach(mainServoPin);
     //speedmeter pin and funtion initialization
+    printf_begin();
+    //Setup first time setup reset_time
+    reset_time = 0;
 }
 void loop()
 {
@@ -195,5 +200,12 @@ void loop()
     // Read sonic sensor distance and potential lock motor 
     ecu.lastDistanceToBarrier = sonic_radar1.getDistanceInCM();
     ecu.run();
-         
-}
+    //Serial.println("itr");
+    if(connection.get_connection_type() ==connection_types::RF24 && millis() - reset_time > 1000 && (!connection.is_chip_connected() ||  millis() - connection.last_received_data_time() > 1000))
+    {
+        connection.reset();
+        Serial.println("Hard reset");
+        reset_time = millis();
+    }
+
+}   
