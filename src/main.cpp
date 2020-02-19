@@ -201,7 +201,7 @@ void loop()
     ecu.lastDistanceToBarrier = sonic_radar1.getDistanceInCM();
     ecu.run();
     //Serial.println("itr");
-    if(connection.get_connection_type() ==connection_types::RF24 && millis() - reset_time > 1000 && (!connection.is_chip_connected() ||  millis() - connection.last_received_data_time() > 1000))
+    if(connection.get_connection_type() ==connection_types::RF24 && millis() - reset_time > 5000 && (!connection.is_chip_connected() ||  millis() - connection.last_received_data_time() > 1000))
     {
         connection.reset();
         Serial.println("Hard reset");

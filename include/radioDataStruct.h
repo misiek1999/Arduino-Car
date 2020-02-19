@@ -9,7 +9,7 @@
     };
     struct sterringData{
         int8_t pad_power;
-        int8_t pad_main_servo;
+        int pad_main_servo;
         gear_mode selected_gear;
         
     };
